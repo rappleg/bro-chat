@@ -1,4 +1,4 @@
-package com.mycompany.myproject.test.integration.groovy;
+package com.gr8conf.demo.test.integration.groovy;
 /*
  * Copyright 2013 Red Hat, Inc.
  *

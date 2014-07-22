@@ -1,4 +1,4 @@
-package com.mycompany.myproject.test.integration.python;
+package com.gr8conf.demo.test.integration.python;
 /*
  * Copyright 2013 Red Hat, Inc.
  *
