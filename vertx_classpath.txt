@@ -1,0 +1,5 @@
+src/main/resources
+bin
+out/production/bro-chat
+out/test/bro-chat
+build/deps

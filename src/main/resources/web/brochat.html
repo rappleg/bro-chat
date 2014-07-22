@@ -1,0 +1,46 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/brochat.css">
+	<title>Welcome to BroChat</title>
+</head>
+
+<body>
+	<div class="container chat-signin">
+		<form class="form-signin">
+			<h2 class="form-signin-heading">BroChat sign in</h2>
+			<label for="username">Username</label>
+			<input type="text" class="input-block-level" placeholder="Username" id="username">
+			<div class="btn-group">
+				<label for="chatroom">Chatroom</label>
+				<select size="1" id="chatroom">
+					<option>gr8conf</option>
+				</select>
+			</div>
+			<br/>
+			<button class="btn btn-large btn-primary" type="submit" id="enterRoom">Sign in</button>
+		</form>
+	</div>
+
+	<div class="container chat-wrapper">
+		<form id="do-chat">
+			<h2 class="alert alert-success"></h2>
+			<table id="response" class="table table-bordered"></table>
+			<fieldset>
+				<legend>Holla at me bro...</legend>
+				<div class="controls">
+					<input type="text" class="input-block-level" placeholder="Your message..." id="message" style="height:60px"/>
+					<input type="submit" class="btn btn-large btn-block btn-primary" value="Send message" />
+					<button class="btn btn-large btn-block" type="button" id="leave-room">Leave room</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+
+	<script src='js/jquery-1.10.2.min.js'></script>
+	<script src="js/bootstrap.js"></script>
+	<script src="js/brochat.js"></script>
+</body>
+
+</html>

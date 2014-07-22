@@ -1,0 +1,20 @@
+.chat-signin {
+	width: 300px;
+}
+
+td.received {
+	min-width: 80px;
+	max-width: 100%;
+	font-size: 11px;
+	white-space: nowrap;
+}
+
+td.user.label {
+	min-width: 40px;
+	max-width: 100%;
+	font-size: 12px;
+}
+
+td.message {
+	width: 100%;
+}
