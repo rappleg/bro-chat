@@ -42,7 +42,7 @@ public class ChatVerticle extends Verticle {
 			}
 		});
 
-		vertx.createHttpServer().requestHandler(httpRouteMatcher).listen(8080, "localhost");
+		vertx.createHttpServer().requestHandler(httpRouteMatcher).listen(8080);
 
 		container.logger().info("Starting Websocket Chat Server on 8090");
 

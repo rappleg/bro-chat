@@ -29,7 +29,7 @@ class GroovyChatVerticle extends Verticle {
 			container.logger.info "Rendering resources " + new File(req.path)
 			req.response.sendFile "web" + new File(req.path)
 		}
-		vertx.createHttpServer().requestHandler(rm.asClosure()).listen(8080, "localhost")
+		vertx.createHttpServer().requestHandler(rm.asClosure()).listen(8080)
 
 		logger.info "Starting Websocket BroChat Server on 8090"
 
