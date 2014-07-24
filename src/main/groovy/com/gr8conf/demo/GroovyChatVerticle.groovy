@@ -3,6 +3,7 @@ package com.gr8conf.demo
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import groovy.json.JsonBuilder
 import org.vertx.groovy.core.http.RouteMatcher
 import org.vertx.groovy.platform.Verticle
 
@@ -11,6 +12,13 @@ import java.util.regex.Pattern
 class GroovyChatVerticle extends Verticle {
 
 	private static final String RECEIVED_DATE_FORMAT = "MMM-dd h:mm a"
+	private static final List BRO_REPLIES = [
+		"Cool story bro.",
+		"Bro, do you even lift?",
+		"U mad bro?",
+		"Don't tase me bro!",
+		"Come at me bro!"
+	]
 
 	def start() {
 
@@ -26,7 +34,6 @@ class GroovyChatVerticle extends Verticle {
 		rm.get("/") { req ->
 			req.response.sendFile "web/brochat.html"
 		}.get(".*\\.(css|js)") { req ->
-			container.logger.info "Rendering resources " + new File(req.path)
 			req.response.sendFile "web" + new File(req.path)
 		}
 		vertx.createHttpServer().requestHandler(rm.asClosure()).listen(8080)
@@ -54,11 +61,18 @@ class GroovyChatVerticle extends Verticle {
 				def mapper = new ObjectMapper()
 				try {
 					JsonNode rootNode = mapper.readTree(data.toString())
-					((ObjectNode) rootNode).put("received", new Date().format(RECEIVED_DATE_FORMAT))
+					def dateReceived = new Date().format(RECEIVED_DATE_FORMAT)
+					((ObjectNode) rootNode).put("received", dateReceived)
 					String jsonOutput = mapper.writeValueAsString(rootNode)
 					logger.info "json generated: " + jsonOutput
+					def broReply = getBroReply(jsonOutput)
 					vertx.sharedData.getSet("chat.room." + chatRoom).each { chatter ->
 						eventBus.send((String) chatter, jsonOutput)
+						if (broReply) {
+							logger.info "Sending bro reply: " + broReply
+							String broReplyJSON = new JsonBuilder([message: broReply, sender:"bro",received:dateReceived]).toString()
+							eventBus.send((String) chatter, broReplyJSON)
+						}
 					}
 				} catch (IOException e) {
 					ws.reject()
@@ -67,5 +81,9 @@ class GroovyChatVerticle extends Verticle {
 		}.listen(8090)
 
 		logger.info "GroovyChatVerticle started"
+	}
+
+	String getBroReply(message) {
+		message.contains("@bro") ? BRO_REPLIES[new Random().nextInt(BRO_REPLIES.size())] : null
 	}
 }
