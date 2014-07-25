@@ -1,7 +1,6 @@
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="css/brochat.css">
 	<title>Welcome to BroChat</title>
 </head>
@@ -12,13 +11,12 @@
 			<h2 class="form-signin-heading">BroChat sign in</h2>
 			<label for="username">Username</label>
 			<input type="text" class="input-block-level" placeholder="Username" id="username">
-			<div class="btn-group">
+			<div class="chatroom-group">
 				<label for="chatroom">Chatroom</label>
 				<select size="1" id="chatroom">
 					<option>gr8conf</option>
 				</select>
 			</div>
-			<br/>
 			<button class="btn btn-large btn-primary" type="submit" id="enterRoom">Sign in</button>
 		</form>
 	</div>
@@ -30,7 +28,7 @@
 			<fieldset>
 				<legend>Holla at me bro...</legend>
 				<div class="controls">
-					<input type="text" class="input-block-level" placeholder="Your message..." id="message" style="height:60px"/>
+					<input type="text" class="input-block-level" placeholder="Your message..." id="message" style="height:60px"/><br/>
 					<input type="submit" class="btn btn-large btn-block btn-primary" value="Send message" />
 					<button class="btn btn-large btn-block" type="button" id="leave-room">Leave room</button>
 				</div>
@@ -38,8 +36,8 @@
 		</form>
 	</div>
 
-	<script src='js/jquery-1.10.2.min.js'></script>
-	<script src="js/bootstrap.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 	<script src="js/brochat.js"></script>
 </body>
 
