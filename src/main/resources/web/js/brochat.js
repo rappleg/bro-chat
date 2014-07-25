@@ -17,14 +17,14 @@ function onMessageReceived(evt) {
 
 function sendMessage() {
 	var msg = '{"message":"' + $message.val() + '", "sender":"'
-		+ $username.val() + '", "received":""}';
+		+ $username.val() + '", "room":"' + room + '"}';
 	wsocket.send(msg);
 	$message.val('').focus();
 }
 
 function connectToChatserver() {
 	room = $('#chatroom option:selected').val();
-	wsocket = new WebSocket(serviceLocation + room);
+	wsocket = new WebSocket(serviceLocation + room + '/' + $username.val());
 	wsocket.onmessage = onMessageReceived;
 }
 

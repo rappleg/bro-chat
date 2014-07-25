@@ -1,9 +1,7 @@
 package com.gr8conf.demo
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import org.vertx.groovy.core.http.RouteMatcher
 import org.vertx.groovy.platform.Verticle
 
@@ -22,7 +20,7 @@ class GroovyChatVerticle extends Verticle {
 
 	def start() {
 
-		def chatUrlPattern = Pattern.compile("/chat/(\\w+)")
+		def chatUrlPattern = Pattern.compile("/chat/(\\w+)/(\\w+)")
 		def eventBus = vertx.eventBus
 		def logger = container.logger
 
@@ -30,7 +28,7 @@ class GroovyChatVerticle extends Verticle {
 
 		def rm = new RouteMatcher()
 
-		// Catch all - serve the chat page
+		// Catch all - serve the bro chat page
 		rm.get("/") { req ->
 			req.response.sendFile "web/brochat.html"
 		}.get(".*\\.(css|js)") { req ->
@@ -48,6 +46,10 @@ class GroovyChatVerticle extends Verticle {
 			}
 
 			String chatRoom = m.group(1)
+			String username = m.group(2)
+
+			logger.info "Room " + chatRoom
+			logger.info "username " + username
 			String id = ws.textHandlerID
 			logger.info "Registering new connection with id: $id for BroChat room: $chatRoom"
 			vertx.sharedData.getSet("chat.room." + chatRoom).add(id)
@@ -58,32 +60,58 @@ class GroovyChatVerticle extends Verticle {
 			}
 
 			ws.dataHandler { data ->
-				def mapper = new ObjectMapper()
 				try {
-					JsonNode rootNode = mapper.readTree(data.toString())
+					def origJsonData = new JsonSlurper().parseText(data.toString())
 					def dateReceived = new Date().format(RECEIVED_DATE_FORMAT)
-					((ObjectNode) rootNode).put("received", dateReceived)
-					String jsonOutput = mapper.writeValueAsString(rootNode)
-					logger.info "json generated: " + jsonOutput
-					def broReply = getBroReply(jsonOutput)
-					vertx.sharedData.getSet("chat.room." + chatRoom).each { chatter ->
-						eventBus.send((String) chatter, jsonOutput)
+					origJsonData.received = dateReceived
+					def room = origJsonData.remove("room")
+					String jsonOutput = new JsonBuilder(origJsonData)
+					logger.info "Json generated: " + jsonOutput
+
+					def userMatcher = origJsonData.message =~ /@(\w+)/
+					logger.info "origJsonData.message " + origJsonData.message
+					def matchingUsers = userMatcher?.collect { it[1] }
+					logger.info "Matching users " + matchingUsers
+					if (matchingUsers && !matchingUsers.contains("bro")) {
+						// Send this message to the user that sent it and to each user they're direct messaging
+						eventBus.send("chat.$room.${origJsonData.sender}", jsonOutput)
+						matchingUsers.each { String matchingUsername ->
+							eventBus.send("chat.$room.$matchingUsername", jsonOutput)
+						}
+					} else {
+						// Broadcast this message to everyone in the room
+						eventBus.publish("chat.$room", jsonOutput)
+
+						def broReply = getBroReply(jsonOutput)
 						if (broReply) {
 							logger.info "Sending bro reply: " + broReply
 							String broReplyJSON = new JsonBuilder([message: broReply, sender:"bro",received:dateReceived]).toString()
-							eventBus.send((String) chatter, broReplyJSON)
+							eventBus.publish("chat.$room", broReplyJSON)
 						}
 					}
 				} catch (IOException e) {
 					ws.reject()
 				}
 			}
+
+			// Handle broadcasted messages to a room
+			eventBus.registerHandler("chat.$chatRoom") { message ->
+				logger.info "Received broadcasted message ${message.body}"
+				ws.writeTextFrame(message.body)
+			}
+
+			// Handle direct messages to a specific user in a room
+			eventBus.registerHandler("chat.$chatRoom.$username") { message ->
+				logger.info "Received a direct message ${message.body}"
+				ws.writeTextFrame(message.body)
+			}
+
 		}.listen(8090)
 
 		logger.info "GroovyChatVerticle started"
 	}
 
 	String getBroReply(message) {
-		message.contains("@bro") ? BRO_REPLIES[new Random().nextInt(BRO_REPLIES.size())] : null
+		message.contains("@bro ") ? BRO_REPLIES[new Random().nextInt(BRO_REPLIES.size())] : null
 	}
 }
