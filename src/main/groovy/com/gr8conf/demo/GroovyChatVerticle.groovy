@@ -66,26 +66,26 @@ class GroovyChatVerticle extends Verticle {
 					origJsonData.received = dateReceived
 					def room = origJsonData.remove("room")
 					String jsonOutput = new JsonBuilder(origJsonData)
-					logger.info "Json generated: " + jsonOutput
 
+					// Match on all users that start with @ to determine if anyone should receive direct messages
 					def userMatcher = origJsonData.message =~ /@(\w+)/
-					logger.info "origJsonData.message " + origJsonData.message
 					def matchingUsers = userMatcher?.collect { it[1] }
 					logger.info "Matching users " + matchingUsers
 					if (matchingUsers && !matchingUsers.contains("bro")) {
 						// Send this message to the user that sent it and to each user they're direct messaging
 						eventBus.send("chat.$room.${origJsonData.sender}", jsonOutput)
+						logger.debug "Sending message:[$jsonOutput] directly to users: $matchingUsers"
 						matchingUsers.each { String matchingUsername ->
 							eventBus.send("chat.$room.$matchingUsername", jsonOutput)
 						}
 					} else {
-						// Broadcast this message to everyone in the room
+						logger.debug "Broadcasting message:[$jsonOutput] to everyone in room: $room"
 						eventBus.publish("chat.$room", jsonOutput)
 
 						def broReply = getBroReply(jsonOutput)
 						if (broReply) {
 							logger.info "Sending bro reply: " + broReply
-							String broReplyJSON = new JsonBuilder([message: broReply, sender:"bro",received:dateReceived]).toString()
+							String broReplyJSON = new JsonBuilder([message: broReply, sender:"bro", received: dateReceived]).toString()
 							eventBus.publish("chat.$room", broReplyJSON)
 						}
 					}
@@ -105,6 +105,10 @@ class GroovyChatVerticle extends Verticle {
 				logger.info "Received a direct message ${message.body}"
 				ws.writeTextFrame(message.body)
 			}
+
+			// Register message to all clients to add this user to the list of available users in the room
+			String registerJSON = new JsonBuilder([register: true, sender: username]).toString()
+			eventBus.publish("chat.$chatRoom", registerJSON)
 
 		}.listen(8090)
 

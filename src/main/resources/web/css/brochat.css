@@ -25,6 +25,7 @@ td.message {
 	display: block;
 	width: 100%;
 	min-height: 30px;
+	height: 60px;
 	font-size: 20px;
 	padding-left: 5px;
 	-webkit-box-sizing: border-box;
@@ -34,4 +35,21 @@ td.message {
 
 .chatroom-group {
 	padding: 15px 0;
+}
+
+.chat-wrapper {
+	display: none;
+}
+
+input#username {
+	height: 30px;
+}
+
+ul#loggedInUsers {
+	list-style-type: none;
+}
+
+ul#loggedInUsers li {
+	display: inline-block;
+	padding: 5px;
 }
