@@ -1,5 +1,5 @@
 var wsocket;
-var serviceLocation = "ws://0.0.0.0:8090/chat/";
+var serviceLocation = "ws://0.0.0.0:8090/chat/"; //Update to our ip before demo
 var $username;
 var $message;
 var $chatWindow;
