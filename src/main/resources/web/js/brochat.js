@@ -1,5 +1,6 @@
 var wsocket;
-var serviceLocation = "ws://0.0.0.0:8090/chat/";
+// If doing a demo from change this to the ip of the computer so others may access it on the network
+var serviceLocation = "ws://192.168.2.39:8090/chat/";
 var $username;
 var $message;
 var $chatWindow;
@@ -9,7 +10,7 @@ var room = '';
 function onMessageReceived(evt) {
 	var msg = JSON.parse(evt.data); // native API
 	if (msg.register === true) {
-		$loggedInUsers.append('<li><a class="directMessageLink" href="javascript://">' + msg.sender + '</a></li>');
+		$loggedInUsers.append('<li><a class="directMessageLink user label label-info" href="javascript://">' + msg.sender + '</a></li>');
 	} else {
 		var $messageLine = $('<tr>'
 			+ '<td class="received">' + msg.received + '</td>'
