@@ -48,15 +48,15 @@ class GroovyChatVerticle extends Verticle {
 			String chatRoom = m.group(1)
 			String username = m.group(2)
 
-			logger.info "Room " + chatRoom
-			logger.info "username " + username
-			String id = ws.textHandlerID
-			logger.info "Registering new connection with id: $id for BroChat room: $chatRoom"
-			vertx.sharedData.getSet("chat.room." + chatRoom).add(id)
+			logger.info "Registering new connection with username: $username for BroChat room: $chatRoom"
+			vertx.sharedData.getSet("chat.room." + chatRoom).add(username)
 
 			ws.closeHandler { event ->
-				logger.info "Un-registering connection with id: $id for BroChat room: $chatRoom"
-				vertx.sharedData.getSet("chat.room." + chatRoom).remove(id)
+				logger.info "Un-registering connection with username: $username for BroChat room: $chatRoom"
+				vertx.sharedData.getSet("chat.room." + chatRoom).remove(username)
+				// Un-register message to new client so they have a complete list of all available users in the room
+				String unregisterJSON = new JsonBuilder([unregister: true, sender: username]).toString()
+				eventBus.publish("chat.$chatRoom", unregisterJSON)
 			}
 
 			ws.dataHandler { data ->
@@ -106,6 +106,11 @@ class GroovyChatVerticle extends Verticle {
 				ws.writeTextFrame(message.body)
 			}
 
+			(vertx.sharedData.getSet("chat.room." + chatRoom) - username).each { existingUsername ->
+				// Register message to new client so they have a complete list of all available users in the room
+				String registerJSON = new JsonBuilder([register: true, sender: existingUsername]).toString()
+				eventBus.send("chat.$chatRoom.$username", registerJSON)
+			}
 			// Register message to all clients to add this user to the list of available users in the room
 			String registerJSON = new JsonBuilder([register: true, sender: username]).toString()
 			eventBus.publish("chat.$chatRoom", registerJSON)

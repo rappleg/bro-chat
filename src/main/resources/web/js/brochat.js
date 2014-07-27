@@ -9,9 +9,13 @@ var room = '';
 
 function onMessageReceived(evt) {
 	var msg = JSON.parse(evt.data); // native API
-	if (msg.register === true) {
+	if (msg.register) {
 		$loggedInUsers.append('<li><a class="directMessageLink user label label-info" href="javascript://">' + msg.sender + '</a></li>');
-	} else {
+	} else if (msg.unregister) {
+		$loggedInUsers.find("li").filter(function () {
+			return $(this).text() === msg.sender
+		}).remove();
+	} else if (msg.message) {
 		var $messageLine = $('<tr>'
 			+ '<td class="received">' + msg.received + '</td>'
 			+ '<td class="user label label-info">' + msg.sender + '</td>'
