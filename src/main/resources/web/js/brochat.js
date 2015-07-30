@@ -63,9 +63,14 @@ $(document).ready(function() {
 		$('.chat-wrapper').show();
 		$message.focus();
 	});
+
 	$('#do-chat').submit(function(evt) {
 		evt.preventDefault();
-		sendMessage()
+		if ($message.val().indexOf("<script>") > -1) {
+			alert('Nice try bro!');
+		} else {
+			sendMessage();
+		}
 	});
 
 	$('#leave-room').click(function() {
