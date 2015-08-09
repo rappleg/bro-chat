@@ -3,27 +3,10 @@
   // Java verticle
 //  "main":"com.gr8conf.demo.ChatVerticle",
 
-  // In this example we also provide various other versions of the main verticle, you can uncomment this and
-//  play around:
-
-  // Java *source* verticle
-//  "main":"JavaSourcePingVerticle.java",
+  // In this example we also provide various other versions of the main verticle, you can uncomment this and play around
 
   // Compiled Groovy verticle - note that they must be prefixed with 'groovy:' to distinguish them from compiled Java verticles
   "main":"groovy:com.gr8conf.demo.GroovyChatVerticle",
-
-  // Groovy *script* verticle
-//  "main": "GroovyVerticle.groovy",
-
-  // Ruby verticle
-//  "main":"ping_verticle.rb",
-
-  // JavaScript verticle
-//  "main": "ping_verticle.js",
-
-  // Python verticle
-//  "main": "ping_verticle.py",
-
 
   // If your module is going to be registered in the Vert.x module registry you will also need the following
   // mandatory fields
